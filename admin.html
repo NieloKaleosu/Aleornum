@@ -75,127 +75,11 @@
       display: none;
     }
 
-    @media (max-width: 1024px) {
-      .card {
-        width: 80%;
-        padding: 30px 20px;
-      }
-
-      h1 {
-        font-size: 1.8em;
-      }
-
-      input {
-        width: 90%;
-      }
-
-      .btn {
-        padding: 12px 25px;
-        font-size: 1em;
-      }
-    }
-
     @media (max-width: 768px) {
-      .card {
-        width: 90%;
-        padding: 25px 15px;
-      }
-
-      h1 {
-        font-size: 1.7em;
-      }
-
-      input {
-        width: 100%;
-      }
-
-      .btn {
-        padding: 12px 0;
-        width: 100%;
-        font-size: 1.1em;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .card {
-        width: 95%;
-        padding: 20px 10px;
-      }
-
-      h1 {
-        font-size: 1.6em;
-      }
-
-      input {
-        width: 100%;
-        padding: 10px;
-      }
-
-      .btn {
-        padding: 10px 0;
-        font-size: 1em;
-      }
+      .card { width: 90%; padding: 30px 20px; }
+      input, .btn { width: 100%; }
     }
   </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDu5-0t4rb942DcwccU_2dg-mxyvWrRSUA",
-      authDomain: "aleornum-multiverso.firebaseapp.com",
-      databaseURL: "https://aleornum-multiverso-default-rtdb.firebaseio.com",
-      projectId: "aleornum-multiverso",
-      storageBucket: "aleornum-multiverso.firebasestorage.app",
-      messagingSenderId: "817768396088",
-      appId: "1:817768396088:web:eacdd2fe8bc2c4fe303dcd"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    // Função para verificar a senha e liberar o formulário
-    function verificarSenha() {
-      const senha = document.getElementById('senha').value.trim();
-      const msg = document.getElementById('mensagem');
-
-      // Verifica se a senha está correta
-      if (senha !== "160302") {
-        msg.innerText = "Acesso negado! Palavra mestra incorreta.";
-        return;
-      }
-
-      // Se a senha estiver correta, exibe o formulário de adicionar palavras
-      document.querySelector('.formulario-palavra').style.display = 'block';
-      document.querySelector('.senha-form').style.display = 'none';
-      msg.innerText = ""; // Limpa a mensagem de erro
-    }
-
-    // Função para adicionar a palavra ao banco de dados
-    function adicionarPalavra() {
-      const palavra = document.getElementById('palavra').value.trim().toLowerCase();
-      const traducao = document.getElementById('traducao').value.trim();
-      const msg = document.getElementById('mensagem');
-
-      // Verifica se todos os campos foram preenchidos
-      if (!palavra || !traducao) {
-        msg.innerText = "Preencha todos os campos.";
-        return;
-      }
-
-      // Adiciona a palavra ao banco de dados
-      set(ref(db, 'dicionario/' + palavra), traducao)
-        .then(() => {
-          msg.innerText = `Palavra "${palavra}" adicionada com sucesso!`;
-          document.getElementById('palavra').value = '';
-          document.getElementById('traducao').value = '';
-        })
-        .catch((error) => {
-          console.error("Erro ao adicionar:", error);
-          msg.innerText = "Erro ao adicionar palavra.";
-        });
-    }
-  </script>
 </head>
 <body>
   <div class="card">
@@ -205,7 +89,7 @@
     <div class="senha-form">
       <input type="password" id="senha" placeholder="Palavra Mestra">
       <br>
-      <button class="btn" onclick="verificarSenha()">Entrar</button>
+      <button class="btn" id="btn-entrar">Entrar</button>
       <div id="mensagem"></div>
     </div>
 
@@ -215,9 +99,66 @@
       <br>
       <input type="text" id="traducao" placeholder="Tradução Aleornum">
       <br>
-      <button class="btn" onclick="adicionarPalavra()">Adicionar Palavra</button>
+      <button class="btn" id="btn-adicionar">Adicionar Palavra</button>
       <div id="mensagem"></div>
     </div>
   </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDu5-0t4rb942DcwccU_2dg-mxyvWrRSUA",
+      authDomain: "aleornum-multiverso.firebaseapp.com",
+      databaseURL: "https://aleornum-multiverso-default-rtdb.firebaseio.com",
+      projectId: "aleornum-multiverso",
+      storageBucket: "aleornum-multiverso.appspot.com",
+      messagingSenderId: "817768396088",
+      appId: "1:817768396088:web:eacdd2fe8bc2c4fe303dcd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const senhaCerta = "160302";
+
+    const btnEntrar = document.getElementById('btn-entrar');
+    const btnAdicionar = document.getElementById('btn-adicionar');
+    const mensagem = document.getElementById('mensagem');
+
+    btnEntrar.addEventListener('click', () => {
+      const senha = document.getElementById('senha').value.trim();
+      if (senha !== senhaCerta) {
+        mensagem.innerText = "Acesso negado! Palavra mestra incorreta.";
+        return;
+      }
+
+      document.querySelector('.senha-form').style.display = 'none';
+      document.querySelector('.formulario-palavra').style.display = 'block';
+      mensagem.innerText = "";
+    });
+
+    btnAdicionar.addEventListener('click', () => {
+      const palavra = document.getElementById('palavra').value.trim().toLowerCase();
+      const traducao = document.getElementById('traducao').value.trim();
+
+      if (!palavra || !traducao) {
+        mensagem.innerText = "Preencha todos os campos.";
+        return;
+      }
+
+      set(ref(db, 'dicionario/' + palavra), traducao)
+        .then(() => {
+          mensagem.innerText = `Palavra "${palavra}" adicionada com sucesso!`;
+          document.getElementById('palavra').value = '';
+          document.getElementById('traducao').value = '';
+        })
+        .catch((error) => {
+          console.error("Erro ao adicionar:", error);
+          mensagem.innerText = "Erro ao adicionar palavra.";
+        });
+    });
+  </script>
 </body>
 </html>
