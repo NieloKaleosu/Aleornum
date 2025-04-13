@@ -1,134 +1,176 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Aleornum</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Adicionar Palavra</title>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.3/firebase-database.js"></script>
   <style>
-    * {
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #2e2e2e;
+      color: #f1f1f1;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background-color: #121212;
-      color: #f5f5f5;
-      font-family: sans-serif;
-      height: 100vh; /* Garantir que ocupe toda a altura da tela */
-      display: flex;
-      justify-content: center; /* Centraliza o conteúdo horizontalmente */
-      align-items: center; /* Centraliza o conteúdo verticalmente */
-    }
-
-    .container {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100%; /* Ocupa toda a altura da tela */
-      width: 100%; /* Garante que o conteúdo ocupe toda a largura */
+      height: 100vh;
     }
 
-    .card {
-      background-color: #1e1e1e;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #ffcc00;
-      max-width: 600px;
+    .container {
+      background-color: #333;
+      border-radius: 10px;
+      padding: 30px;
       width: 100%;
+      max-width: 500px;
+    }
+
+    h1 {
       text-align: center;
+      color: #f1f1f1;
     }
 
-    input, button {
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #f1f1f1;
+    }
+
+    input[type="text"], input[type="email"], input[type="password"] {
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #555;
+      color: #f1f1f1;
+      font-size: 16px;
+    }
+
+    input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+      outline: none;
+      border-color: #f1a825;
     }
 
     button {
-      background-color: #8B0000;
+      width: 100%;
+      padding: 12px;
+      background-color: #f1a825;
       color: white;
-      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: background-color 0.3s;
     }
 
     button:hover {
-      background-color: #B22222;
+      background-color: #f1d600;
     }
 
-    button:active {
-      background-color: #8B0000;
+    p {
+      text-align: center;
+      font-size: 18px;
+      color: #f1f1f1;
     }
 
-    a {
-      color: #ffcc00;
-      text-decoration: none;
+    .form-group {
+      margin-bottom: 20px;
     }
 
-    a:hover {
-      text-decoration: underline;
+    .form-group:last-child {
+      margin-bottom: 0;
     }
+
   </style>
 </head>
 <body>
+
   <div class="container">
-    <div class="card">
-      <h1>➕ Adicionar Palavras</h1>
-      <input type="text" id="aleornum" placeholder="Palavra em Aleornum">
-      <input type="text" id="portugues" placeholder="Tradução em Português">
-      <button id="adicionarBtn">Adicionar</button>
-      <p><a href="index.html">⬅ Voltar ao Tradutor</a></p>
+    <h1>Página Admin - Adicionar Palavra</h1>
+    
+    <!-- Formulário de login -->
+    <form id="formLogin">
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" placeholder="Seu email" required>
+
+      <label for="senha">Senha:</label>
+      <input type="password" id="senha" name="senha" placeholder="Sua senha" required>
+
+      <button type="submit">Entrar</button>
+    </form>
+
+    <div id="formAdicionarPalavra" style="display:none;">
+      <form id="formAdicionar">
+        <label for="palavra">Palavra:</label>
+        <input type="text" id="palavra" name="palavra" placeholder="Digite a palavra" required>
+
+        <label for="traducao">Tradução:</label>
+        <input type="text" id="traducao" name="traducao" placeholder="Digite a tradução" required>
+
+        <button type="submit">Adicionar Palavra</button>
+      </form>
     </div>
+    
+    <p id="resultado"></p>
   </div>
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
   <script>
+    // Configuração do Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyC6KmlwRzaZRJp_x8Jw82vkpM-6xGp0kDc",
-      authDomain: "aleornum.firebaseapp.com",
-      databaseURL: "https://aleornum-default-rtdb.firebaseio.com",
-      projectId: "aleornum",
-      storageBucket: "aleornum.firebasestorage.app",
-      messagingSenderId: "541801167099",
-      appId: "1:541801167099:web:b9f0d75b94ae693765985e"
+      apiKey: "AIzaSyDu5-0t4rb942DcwccU_2dg-mxyvWrRSUA",
+      authDomain: "aleornum-multiverso.firebaseapp.com",
+      databaseURL: "https://aleornum-multiverso-default-rtdb.firebaseio.com",
+      projectId: "aleornum-multiverso",
+      storageBucket: "aleornum-multiverso.firebasestorage.app",
+      messagingSenderId: "817768396088",
+      appId: "1:817768396088:web:eacdd2fe8bc2c4fe303dcd"
     };
+    const app = firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const database = firebase.database(app);
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    // Referências aos formulários
+    const formLogin = document.getElementById('formLogin');
+    const formAdicionarPalavra = document.getElementById('formAdicionarPalavra');
+    const formAdicionar = document.getElementById('formAdicionar');
+    const resultado = document.getElementById('resultado');
+    
+    // Autenticação
+    formLogin.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
 
-    // Função para adicionar palavra no Firestore
-    async function adicionarPalavra() {
-      const aleornum = document.getElementById("aleornum").value.trim().toLowerCase();
-      const portugues = document.getElementById("portugues").value.trim().toLowerCase();
+      auth.signInWithEmailAndPassword(email, senha)
+        .then(() => {
+          formLogin.style.display = 'none'; // Ocultar login
+          formAdicionarPalavra.style.display = 'block'; // Mostrar formulário de adicionar palavra
+        })
+        .catch((error) => {
+          resultado.textContent = 'Erro de login: ' + error.message;
+        });
+    });
 
-      if (aleornum && portugues) {
-        try {
-          // Adiciona a palavra na coleção 'dicionario'
-          await db.collection("dicionario").add({
-            aleornum: aleornum,
-            portugues: portugues
-          });
-          alert("Palavra adicionada com sucesso!");
-          // Limpa os campos de entrada após adicionar
-          document.getElementById("aleornum").value = "";
-          document.getElementById("portugues").value = "";
-        } catch (error) {
-          console.error("Erro ao adicionar palavra:", error);
-          alert("Erro ao adicionar palavra. Tente novamente.");
-        }
-      } else {
-        alert("Por favor, preencha todos os campos.");
-      }
-    }
+    // Adicionar palavra ao banco de dados
+    formAdicionar.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const palavra = document.getElementById('palavra').value;
+      const traducao = document.getElementById('traducao').value;
 
-    // Associa a função ao clique do botão
-    document.getElementById("adicionarBtn").addEventListener("click", adicionarPalavra);
+      firebase.database().ref('dicionario/' + palavra).set({
+        traducao: traducao
+      }).then(() => {
+        alert("Palavra adicionada com sucesso!");
+        formAdicionar.reset();
+      }).catch((error) => {
+        alert("Erro ao adicionar palavra: " + error.message);
+      });
+    });
   </script>
+
 </body>
 </html>
