@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Administrador - Aleornum</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background-color: #000;
+      color: white;
+      font-family: 'Cinzel', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-image: radial-gradient(ellipse at center, #111 0%, #000 100%);
+    }
+
+    .card {
+      background-color: rgba(0, 0, 0, 0.85);
+      border: 2px solid gold;
+      border-radius: 20px;
+      padding: 40px 50px;
+      width: 700px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: gold;
+    }
+
+    input {
+      width: 80%;
+      padding: 12px;
+      margin-bottom: 20px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 2px solid gold;
+      background-color: #111;
+      color: white;
+    }
+
+    .btn {
+      background-color: #800000;
+      color: white;
+      border: 2px solid gold;
+      padding: 12px 28px;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #a10000;
+      box-shadow: 0 0 20px gold;
+      transform: scale(1.05);
+    }
+
+    #mensagem {
+      margin-top: 20px;
+      font-size: 1em;
+      color: #ddd;
+      min-height: 30px;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        width: 90%;
+        padding: 30px 20px;
+      }
+
+      input {
+        width: 100%;
+      }
+    }
+
+    /* Formulário de adição de palavra */
+    .formulario-palavra {
+      display: none;
+    }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDu5-0t4rb942DcwccU_2dg-mxyvWrRSUA",
+      authDomain: "aleornum-multiverso.firebaseapp.com",
+      databaseURL: "https://aleornum-multiverso-default-rtdb.firebaseio.com",
+      projectId: "aleornum-multiverso",
+      storageBucket: "aleornum-multiverso.firebasestorage.app",
+      messagingSenderId: "817768396088",
+      appId: "1:817768396088:web:eacdd2fe8bc2c4fe303dcd"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Função para verificar a senha
+    function verificarSenha() {
+      const senha = document.getElementById('senha').value.trim();
+      const msg = document.getElementById('mensagem');
+      
+      if (senha !== "160302") {
+        msg.innerText = "Acesso negado! Palavra mestra incorreta.";
+        return;
+      }
+
+      // Se a senha estiver correta, desbloqueia o formulário
+      document.querySelector('.formulario-palavra').style.display = 'block';
+      document.querySelector('.senha-form').style.display = 'none';  // Esconde o formulário da senha
+    }
+
+    // Função para adicionar a palavra
+    window.adicionarPalavra = async function adicionarPalavra() {
+      const palavra = document.getElementById('palavra').value.trim().toLowerCase();
+      const traducao = document.getElementById('traducao').value.trim();
+      const msg = document.getElementById('mensagem');
+
+      if (!palavra || !traducao) {
+        msg.innerText = "Preencha todos os campos.";
+        return;
+      }
+
+      try {
+        await set(ref(db, 'dicionario/' + palavra), traducao);
+        msg.innerText = `Palavra "${palavra}" adicionada com sucesso!`;
+        document.getElementById('palavra').value = '';
+        document.getElementById('traducao').value = '';
+      } catch (error) {
+        console.error("Erro ao adicionar:", error);
+        msg.innerText = "Erro ao adicionar palavra.";
+      }
+    };
+  </script>
+</head>
+<body>
+  <div class="card">
+    <h1>Administrador Aleornum</h1>
+
+    <!-- Formulário de senha -->
+    <div class="senha-form">
+      <input type="password" id="senha" placeholder="Palavra Mestra">
+      <br>
+      <button class="btn" onclick="verificarSenha()">Entrar</button>
+      <div id="mensagem"></div>
+    </div>
+
+    <!-- Formulário para adicionar palavras -->
+    <div class="formulario-palavra">
+      <input type="text" id="palavra" placeholder="Palavra em Português">
+      <br>
+      <input type="text" id="traducao" placeholder="Tradução Aleornum">
+      <br>
+      <button class="btn" onclick="adicionarPalavra()">Adicionar Palavra</button>
+      <div id="mensagem"></div>
+    </div>
+  </div>
+</body>
+</html>
