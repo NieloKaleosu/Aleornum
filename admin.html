@@ -5,20 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Aleornum</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       background-color: #121212;
       color: #f5f5f5;
       font-family: sans-serif;
-      padding: 20px;
+      height: 100vh; /* Garantir que ocupe toda a altura da tela */
+      display: flex;
+      justify-content: center; /* Centraliza o conteúdo horizontalmente */
+      align-items: center; /* Centraliza o conteúdo verticalmente */
     }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%; /* Ocupa toda a altura da tela */
+      width: 100%; /* Garante que o conteúdo ocupe toda a largura */
+    }
+
     .card {
       background-color: #1e1e1e;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 0 10px #ffcc00;
       max-width: 600px;
-      margin: auto;
+      width: 100%;
+      text-align: center;
     }
+
     input, button {
       width: 100%;
       margin: 10px 0;
@@ -26,21 +46,42 @@
       border-radius: 8px;
       border: none;
     }
+
     button {
       background-color: #8B0000;
       color: white;
       font-weight: bold;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #B22222;
+    }
+
+    button:active {
+      background-color: #8B0000;
+    }
+
+    a {
+      color: #ffcc00;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>➕ Adicionar Palavras</h1>
-    <input type="text" id="aleornum" placeholder="Palavra em Aleornum">
-    <input type="text" id="portugues" placeholder="Tradução em Português">
-    <button onclick="adicionarPalavra()">Adicionar</button>
-    <p><a href="index.html" style="color: #ffcc00;">⬅ Voltar ao Tradutor</a></p>
+  <div class="container">
+    <div class="card">
+      <h1>➕ Adicionar Palavras</h1>
+      <input type="text" id="aleornum" placeholder="Palavra em Aleornum">
+      <input type="text" id="portugues" placeholder="Tradução em Português">
+      <button id="adicionarBtn">Adicionar</button>
+      <p><a href="index.html">⬅ Voltar ao Tradutor</a></p>
+    </div>
   </div>
 
   <!-- Firebase SDKs -->
@@ -85,6 +126,9 @@
         alert("Por favor, preencha todos os campos.");
       }
     }
+
+    // Associa a função ao clique do botão
+    document.getElementById("adicionarBtn").addEventListener("click", adicionarPalavra);
   </script>
 </body>
 </html>
