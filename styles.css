@@ -1,0 +1,55 @@
+/* Definindo o fundo preto e centralizando o conteúdo */
+body {
+  background-color: black;
+  color: white;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilo do card */
+.card {
+  background-color: black;
+  border: 3px solid gold;
+  padding: 30px;
+  text-align: center;
+  width: 400px;
+  border-radius: 10px;
+}
+
+/* Estilo do título */
+h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+/* Estilo da descrição */
+p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+/* Estilo dos botões */
+.buttons {
+  display: flex;
+  justify-content: space-around;
+}
+
+.btn {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  font-size: 1.2em;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: darkred;
+}
