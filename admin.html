@@ -87,15 +87,20 @@
   </script>
 
   <style>
-    body {
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
       font-family: 'Georgia', serif;
       background-color: #000;
       color: white;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       min-height: 100vh;
       padding: 20px;
     }
@@ -104,6 +109,7 @@
       font-size: 3rem;
       color: gold;
       text-align: center;
+      margin-bottom: 20px;
     }
 
     .card {
@@ -177,6 +183,27 @@
 
       #ultimasPalavras {
         display: block;
+      }
+    }
+
+    /* Adicionando mais responsividade para pequenas telas */
+    @media (max-width: 767px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      .card {
+        padding: 20px;
+        max-width: 90%;
+      }
+
+      input, button {
+        font-size: 1rem;
+        padding: 10px;
+      }
+
+      #status {
+        font-size: 0.9rem;
       }
     }
   </style>
