@@ -71,6 +71,10 @@
       min-height: 30px;
     }
 
+    .formulario-palavra {
+      display: none;
+    }
+
     @media (max-width: 1024px) {
       .card {
         width: 80%;
@@ -132,14 +136,7 @@
         font-size: 1em;
       }
     }
-
-    /* Formulário de adição de palavra */
-    .formulario-palavra {
-      display: none;
-    }
   </style>
-
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-database.js";
@@ -157,42 +154,47 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Função para verificar a senha
+    // Função para verificar a senha e liberar o formulário
     function verificarSenha() {
       const senha = document.getElementById('senha').value.trim();
       const msg = document.getElementById('mensagem');
-      
+
+      // Verifica se a senha está correta
       if (senha !== "160302") {
         msg.innerText = "Acesso negado! Palavra mestra incorreta.";
         return;
       }
 
-      // Se a senha estiver correta, desbloqueia o formulário
+      // Se a senha estiver correta, exibe o formulário de adicionar palavras
       document.querySelector('.formulario-palavra').style.display = 'block';
-      document.querySelector('.senha-form').style.display = 'none';  // Esconde o formulário da senha
+      document.querySelector('.senha-form').style.display = 'none';
+      msg.innerText = ""; // Limpa a mensagem de erro
     }
 
-    // Função para adicionar a palavra
-    window.adicionarPalavra = async function adicionarPalavra() {
+    // Função para adicionar a palavra ao banco de dados
+    function adicionarPalavra() {
       const palavra = document.getElementById('palavra').value.trim().toLowerCase();
       const traducao = document.getElementById('traducao').value.trim();
       const msg = document.getElementById('mensagem');
 
+      // Verifica se todos os campos foram preenchidos
       if (!palavra || !traducao) {
         msg.innerText = "Preencha todos os campos.";
         return;
       }
 
-      try {
-        await set(ref(db, 'dicionario/' + palavra), traducao);
-        msg.innerText = `Palavra "${palavra}" adicionada com sucesso!`;
-        document.getElementById('palavra').value = '';
-        document.getElementById('traducao').value = '';
-      } catch (error) {
-        console.error("Erro ao adicionar:", error);
-        msg.innerText = "Erro ao adicionar palavra.";
-      }
-    };
+      // Adiciona a palavra ao banco de dados
+      set(ref(db, 'dicionario/' + palavra), traducao)
+        .then(() => {
+          msg.innerText = `Palavra "${palavra}" adicionada com sucesso!`;
+          document.getElementById('palavra').value = '';
+          document.getElementById('traducao').value = '';
+        })
+        .catch((error) => {
+          console.error("Erro ao adicionar:", error);
+          msg.innerText = "Erro ao adicionar palavra.";
+        });
+    }
   </script>
 </head>
 <body>
@@ -207,7 +209,7 @@
       <div id="mensagem"></div>
     </div>
 
-    <!-- Formulário para adicionar palavras -->
+    <!-- Formulário de adição de palavra -->
     <div class="formulario-palavra">
       <input type="text" id="palavra" placeholder="Palavra em Português">
       <br>
