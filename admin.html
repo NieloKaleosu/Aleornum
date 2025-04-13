@@ -43,8 +43,10 @@
     <p><a href="index.html" style="color: #ffcc00;">⬅ Voltar ao Tradutor</a></p>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyC6KmlwRzaZRJp_x8Jw82vkpM-6xGp0kDc",
@@ -59,15 +61,28 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Função para adicionar palavra no Firestore
     async function adicionarPalavra() {
       const aleornum = document.getElementById("aleornum").value.trim().toLowerCase();
       const portugues = document.getElementById("portugues").value.trim().toLowerCase();
 
       if (aleornum && portugues) {
-        await db.collection("dicionario").add({ aleornum, portugues });
-        alert("Palavra adicionada!");
-        document.getElementById("aleornum").value = "";
-        document.getElementById("portugues").value = "";
+        try {
+          // Adiciona a palavra na coleção 'dicionario'
+          await db.collection("dicionario").add({
+            aleornum: aleornum,
+            portugues: portugues
+          });
+          alert("Palavra adicionada com sucesso!");
+          // Limpa os campos de entrada após adicionar
+          document.getElementById("aleornum").value = "";
+          document.getElementById("portugues").value = "";
+        } catch (error) {
+          console.error("Erro ao adicionar palavra:", error);
+          alert("Erro ao adicionar palavra. Tente novamente.");
+        }
+      } else {
+        alert("Por favor, preencha todos os campos.");
       }
     }
   </script>
